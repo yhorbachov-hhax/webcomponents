@@ -1,0 +1,37 @@
+{
+  "name": "foundation-web-components",
+  "version": "1.0.0",
+  "description": "JQuery plugins and Web Components library",
+  "main": "dist/webcomponents.js",
+  "scripts": {
+    "commit": "cz",
+    "bundle:dev": "webpack serve --open --config webpack.dev.js",
+    "bundle:prod": "webpack --config webpack.prod.js"
+  },
+  "devDependencies": {
+    "babel-loader": "^8.2.5",
+    "css-loader": "^6.7.1",
+    "cz-conventional-changelog": "^3.3.0",
+    "sass": "^1.52.3",
+    "sass-loader": "^13.0.0",
+    "style-loader": "^3.3.1",
+    "webpack": "^5.73.0",
+    "webpack-cli": "^4.10.0",
+    "webpack-dev-server": "^4.9.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://YaroslavHorbachovHH@bitbucket.org/hhax/webcomponents.git"
+  },
+  "keywords": [],
+  "author": "YaroslavHorbachovHH@bitbucket.org",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://bitbucket.org/hhax/webcomponents/issues"
+  },
+  "homepage": "https://bitbucket.org/hhax/webcomponents#readme",
+  "dependencies": {
+    "foundation-sites": "^6.7.4",
+    "motion-ui": "^2.0.3"
+  }
+}
