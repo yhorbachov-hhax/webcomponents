@@ -6,7 +6,8 @@
   "scripts": {
     "commit": "cz",
     "bundle:dev": "webpack serve --open --config webpack.dev.js",
-    "bundle:prod": "webpack --config webpack.prod.js"
+    "bundle:prod": "webpack --config webpack.prod.js",
+    "publish": "npm run bundle:prod && npm publish"
   },
   "devDependencies": {
     "babel-loader": "^8.2.5",
