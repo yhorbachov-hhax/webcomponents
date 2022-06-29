@@ -116,6 +116,7 @@ options = {
 */
 export function createHistoryViewerWidget(jQuery) {
   jQuery.fn.connectHistoryViewer = function (options) {
+    // Check if plugin operates over empty element
     if (!this.length) {
       console.error("Empty trigger element");
 

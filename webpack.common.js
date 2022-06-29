@@ -19,7 +19,6 @@ module.exports = {
     library: {
       name: "webcomponents",
       type: "umd",
-      type: "window",
     },
   },
 };
