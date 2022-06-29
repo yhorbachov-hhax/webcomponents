@@ -1,13 +1,12 @@
 {
   "name": "foundation-web-components",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "JQuery plugins and Web Components library",
   "main": "dist/webcomponents.js",
   "scripts": {
     "commit": "cz",
     "bundle:dev": "webpack serve --open --config webpack.dev.js",
-    "bundle:prod": "webpack --config webpack.prod.js",
-    "publish": "npm run bundle:prod && npm publish"
+    "bundle:prod": "webpack --config webpack.prod.js"
   },
   "devDependencies": {
     "babel-loader": "^8.2.5",
