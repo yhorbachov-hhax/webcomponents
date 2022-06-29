@@ -73,6 +73,27 @@ function attachToggle(element, id) {
   $(element).attr("data-toggle", id);
 }
 
+function toggleHideScroll() {
+  document.body.classList.toggle("hide-scroll");
+}
+
+function listenCanvasOpened(id) {
+  $("#" + id).on("opened.zf.offCanvas", () => {
+    toggleHideScroll();
+  });
+}
+
+function listenCanvasClosed(id) {
+  $("#" + id).on("closed.zf.offCanvas", () => {
+    toggleHideScroll();
+  });
+}
+
+function attachListeners(id) {
+  listenCanvasOpened(id);
+  listenCanvasClosed(id);
+}
+
 function createContainer(options) {
   const { id, headerTitle, historyUrl, queryParameters } = options;
   const container = document.createDocumentFragment();
@@ -97,6 +118,8 @@ function connectSlideOut(triggerElement, options) {
   $(canvasContainer).foundation();
 
   document.body.appendChild(canvasContainer);
+
+  attachListeners(options.id);
 }
 
 /* 
@@ -139,5 +162,7 @@ export function createHistoryViewerWidget(jQuery) {
     );
 
     connectSlideOut(this, settings);
+
+    return () => attachListeners(settings.id);
   };
 }
