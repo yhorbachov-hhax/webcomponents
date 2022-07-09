@@ -110,6 +110,10 @@ function createContainer(options) {
   return container;
 }
 
+function attachToTop(container) {
+  window.top.document.body.appendChild(container);
+}
+
 function connectSlideOut(triggerElement, options) {
   attachToggle(triggerElement, options.id);
 
@@ -117,7 +121,7 @@ function connectSlideOut(triggerElement, options) {
 
   $(canvasContainer).foundation();
 
-  document.body.appendChild(canvasContainer);
+  attachToTop(canvasContainer);
 
   attachListeners(options.id);
 }
