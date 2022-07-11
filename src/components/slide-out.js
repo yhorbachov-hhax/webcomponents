@@ -1,129 +1,122 @@
-function createOffCanvas(id) {
-  const canvas = document.createElement("div");
+import { getDocumentBody } from "./jquery";
 
-  canvas.classList.add("off-canvas-absolute", "position-right", "viewer-content");
-  canvas.setAttribute("id", id);
-  canvas.setAttribute("data-off-canvas", "");
-  canvas.setAttribute("data-trap-focus", "true");
-  canvas.setAttribute("data-transition-time", ".2s");
-  canvas.setAttribute("data-transition", "slide");
+class SlideOutManager {
+  constructor(jQuery) {
+    this.jQuery = jQuery;
+    this.offCanvasContainer = null;
+  }
 
-  return canvas;
-}
+  connectSlideOut(triggerElement, options) {
+    const canvasContainer = this.createContainer(options);
 
-function createOffCanvasContent() {
-  const canvasContent = document.createElement("div");
+    this.attachToBody(canvasContainer);
+    this.attachToggle(triggerElement);
 
-  canvasContent.classList.add("off-canvas-content");
+    const $container = this.jQuery(canvasContainer);
+    const offCanvasContainer = new Foundation.OffCanvas($container, {
+      trapFocus: true,
+      transitionTime: ".2s",
+      transition: "slide",
+    });
 
-  return canvasContent;
-}
+    this.offCanvasContainer = offCanvasContainer;
 
-function createHeader(headerTitle, id) {
-  const fragment = document.createDocumentFragment();
-  const header = document.createElement("h2");
-  const title = document.createElement("span");
-  const closeButton = document.createElement("button");
-  const closeButtonContent = document.createElement("span");
+    $container.foundation();
 
-  header.classList.add("title");
+    this.attachListeners();
+  }
 
-  title.classList.add("pageTitle");
-  title.innerText = headerTitle;
+  createContainer(options) {
+    const { id, headerTitle, historyUrl, queryParameters } = options;
+    const header = this.createHeader(headerTitle, id);
+    const viewer = this.createViewer(historyUrl, queryParameters);
+    const canvas = this.createOffCanvas();
 
-  closeButton.classList.add("close-button");
-  closeButton.type = "button";
-  closeButton.ariaLabel = "Close Panel";
+    canvas.appendChild(header);
+    canvas.appendChild(viewer);
 
-  closeButtonContent.ariaHidden = "true";
-  closeButtonContent.innerText = "x";
+    return canvas;
+  }
 
-  attachToggle(closeButtonContent, id);
+  createOffCanvas() {
+    const canvas = document.createElement("div");
 
-  header.appendChild(title);
-  closeButton.appendChild(closeButtonContent);
+    canvas.classList.add("off-canvas", "position-right", "viewer-content");
 
-  fragment.appendChild(header);
-  fragment.appendChild(closeButton);
+    return canvas;
+  }
 
-  return fragment;
-}
+  createHeader(headerTitle, id) {
+    const fragment = document.createDocumentFragment();
+    const header = document.createElement("h2");
+    const title = document.createElement("span");
+    const closeButton = document.createElement("button");
+    const closeButtonContent = document.createElement("span");
 
-function createViewer(historyUrl, queryParameters) {
-  const container = document.createElement("div");
+    header.classList.add("title");
 
-  container.classList.add("padding-1");
+    title.classList.add("pageTitle");
+    title.innerText = headerTitle;
 
-  const iframe = document.createElement("iframe");
+    closeButton.classList.add("close-button");
+    closeButton.type = "button";
+    closeButton.ariaLabel = "Close Panel";
 
-  iframe.classList.add("frame-content");
+    closeButtonContent.ariaHidden = "true";
+    closeButtonContent.innerText = "x";
 
-  container.appendChild(iframe);
+    this.attachToggle(closeButtonContent);
 
-  // Combine query params and concat to URL
+    header.appendChild(title);
+    closeButton.appendChild(closeButtonContent);
 
-  console.log(queryParameters);
+    fragment.appendChild(header);
+    fragment.appendChild(closeButton);
 
-  iframe.src = historyUrl;
+    return fragment;
+  }
 
-  return container;
-}
+  createViewer(historyUrl, queryParameters) {
+    const container = document.createElement("div");
 
-function attachToggle(element, id) {
-  $(element).attr("data-toggle", id);
-}
+    container.classList.add("padding-1", "frame-content");
 
-function toggleHideScroll() {
-  document.body.classList.toggle("hide-scroll");
-}
+    const iframe = document.createElement("iframe");
 
-function listenCanvasOpened(id) {
-  $("#" + id).on("opened.zf.offCanvas", () => {
-    toggleHideScroll();
-  });
-}
+    iframe.classList.add("frame-content");
 
-function listenCanvasClosed(id) {
-  $("#" + id).on("closed.zf.offCanvas", () => {
-    toggleHideScroll();
-  });
-}
+    container.appendChild(iframe);
 
-function attachListeners(id) {
-  listenCanvasOpened(id);
-  listenCanvasClosed(id);
-}
+    // Combine query params and concat to opening iframe URL
 
-function createContainer(options) {
-  const { id, headerTitle, historyUrl, queryParameters } = options;
-  const container = document.createDocumentFragment();
-  const header = createHeader(headerTitle, id);
-  const viewer = createViewer(historyUrl, queryParameters);
-  const canvas = createOffCanvas(id);
-  const canvasContent = createOffCanvasContent();
+    console.log(queryParameters);
 
-  canvas.appendChild(header);
-  canvas.appendChild(viewer);
-  container.appendChild(canvas);
-  container.appendChild(canvasContent);
+    iframe.src = historyUrl;
 
-  return container;
-}
+    return container;
+  }
 
-function attachToTop(container) {
-  window.top.document.body.appendChild(container);
-}
+  attachToggle(element) {
+    this.jQuery(element).on("click", () => {
+      this.offCanvasContainer.toggle();
+    });
+  }
 
-function connectSlideOut(triggerElement, options) {
-  attachToggle(triggerElement, options.id);
+  toggleHideScroll() {
+    getDocumentBody().classList.toggle("hide-scroll");
+  }
 
-  const canvasContainer = createContainer(options);
+  attachListeners() {
+    ["closed.zf.offCanvas", "opened.zf.offCanvas"].map((eventType) => {
+      this.offCanvasContainer.$element.on(eventType, () => {
+        this.toggleHideScroll();
+      });
+    });
+  }
 
-  $(canvasContainer).foundation();
-
-  attachToTop(canvasContainer);
-
-  attachListeners(options.id);
+  attachToBody(container) {
+    getDocumentBody().appendChild(container);
+  }
 }
 
 /* 
@@ -161,12 +154,13 @@ export function createHistoryViewerWidget(jQuery) {
     const settings = jQuery.extend(
       {
         headerTitle: "History",
+        skipTriggerBinding: true,
       },
       options
     );
 
-    connectSlideOut(this, settings);
+    const manager = new SlideOutManager(jQuery);
 
-    return () => attachListeners(settings.id);
+    manager.connectSlideOut(this, settings);
   };
 }
