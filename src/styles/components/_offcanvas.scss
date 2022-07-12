@@ -4,7 +4,9 @@ body {
 
 .viewer-content {
   width: 50%;
-  z-index: 1006; // since reveal-overlay is 1005
+  z-index: 1006 !important;
+  // 1006 since reveal-overlay is 1005
+  // important since other classes overrides in runtime
 }
 
 .frame-content {
