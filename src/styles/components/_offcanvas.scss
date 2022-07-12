@@ -4,6 +4,7 @@ body {
 
 .viewer-content {
   width: 50%;
+  z-index: 1006; // since reveal-overlay is 1005
 }
 
 .frame-content {
