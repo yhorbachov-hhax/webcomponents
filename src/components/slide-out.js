@@ -3,14 +3,14 @@ import { getDocumentBody } from "./jquery";
 class SlideOutManager {
   constructor(jQuery) {
     this.jQuery = jQuery;
-    this.offCanvasContainer = null;
+    this.$offCanvasContainer = null;
   }
 
-  connectSlideOut(triggerElement, options) {
-    const canvasContainer = this.createContainer(options);
+  connectSlideOut($triggerElement, options) {
+    const canvasContainer = this.createMainContainer(options);
 
     this.attachToBody(canvasContainer);
-    this.attachToggle(triggerElement);
+    this.attachToggle($triggerElement);
 
     const $container = this.jQuery(canvasContainer);
     const offCanvasContainer = new Foundation.OffCanvas($container, {
@@ -19,18 +19,18 @@ class SlideOutManager {
       transition: "slide",
     });
 
-    this.offCanvasContainer = offCanvasContainer;
+    this.$offCanvasContainer = offCanvasContainer;
 
     $container.foundation();
 
     this.attachListeners();
   }
 
-  createContainer(options) {
-    const { id, headerTitle, historyUrl, queryParameters } = options;
-    const header = this.createHeader(headerTitle, id);
+  createMainContainer(options) {
+    const { headerTitle, historyUrl, queryParameters } = options;
+    const header = this.createHeader(headerTitle);
     const viewer = this.createViewer(historyUrl, queryParameters);
-    const canvas = this.createOffCanvas();
+    const canvas = this.createCanvas();
 
     canvas.appendChild(header);
     canvas.appendChild(viewer);
@@ -38,7 +38,7 @@ class SlideOutManager {
     return canvas;
   }
 
-  createOffCanvas() {
+  createCanvas() {
     const canvas = document.createElement("div");
 
     canvas.classList.add("off-canvas", "position-right", "viewer-content");
@@ -46,8 +46,8 @@ class SlideOutManager {
     return canvas;
   }
 
-  createHeader(headerTitle, id) {
-    const fragment = document.createDocumentFragment();
+  createHeader(headerTitle) {
+    const headerFragment = document.createDocumentFragment();
     const header = document.createElement("h2");
     const title = document.createElement("span");
     const closeButton = document.createElement("button");
@@ -70,22 +70,22 @@ class SlideOutManager {
     header.appendChild(title);
     closeButton.appendChild(closeButtonContent);
 
-    fragment.appendChild(header);
-    fragment.appendChild(closeButton);
+    headerFragment.appendChild(header);
+    headerFragment.appendChild(closeButton);
 
-    return fragment;
+    return headerFragment;
   }
 
   createViewer(historyUrl, queryParameters) {
-    const container = document.createElement("div");
+    const viewer = document.createElement("div");
 
-    container.classList.add("padding-1", "frame-content");
+    viewer.classList.add("padding-1", "frame-content");
 
     const iframe = document.createElement("iframe");
 
     iframe.classList.add("frame-content");
 
-    container.appendChild(iframe);
+    viewer.appendChild(iframe);
 
     // Combine query params and concat to opening iframe URL
 
@@ -93,12 +93,12 @@ class SlideOutManager {
 
     iframe.src = historyUrl;
 
-    return container;
+    return viewer;
   }
 
   attachToggle(element) {
     this.jQuery(element).on("click", () => {
-      this.offCanvasContainer.toggle();
+      this.$offCanvasContainer.toggle();
     });
   }
 
@@ -108,7 +108,7 @@ class SlideOutManager {
 
   attachListeners() {
     ["closed.zf.offCanvas", "opened.zf.offCanvas"].map((eventType) => {
-      this.offCanvasContainer.$element.on(eventType, () => {
+      this.$offCanvasContainer.$element.on(eventType, () => {
         this.toggleHideScroll();
       });
     });
@@ -123,7 +123,6 @@ class SlideOutManager {
 Example of options parameter
 
 options = {
-  id: "uniqTriggerButtonId",
   headerTitile: "Patient History",
   historyUrl: "http://development.hhaexchange.com/history",
   queryParameters: {
@@ -143,10 +142,10 @@ export function createHistoryViewerWidget(jQuery) {
       return;
     }
 
-    const isInvalidOptions = [options.id, options.historyUrl, options.queryParameters].some((value) => !value);
+    const isInvalidOptions = [options.historyUrl, options.queryParameters].some((value) => !value);
 
     if (isInvalidOptions) {
-      console.error("id, historyUrl and queryParameters is mandatory options");
+      console.error("historyUrl and queryParameters is mandatory options");
 
       return;
     }
@@ -154,7 +153,6 @@ export function createHistoryViewerWidget(jQuery) {
     const settings = jQuery.extend(
       {
         headerTitle: "History",
-        skipTriggerBinding: true,
       },
       options
     );
