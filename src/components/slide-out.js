@@ -28,11 +28,11 @@ class SlideOutManager {
 
   createMainContainer(options) {
     const { headerTitle, historyUrl, queryParameters } = options;
-    const header = this.createHeader(headerTitle);
+    // const header = this.createHeader(headerTitle);
     const viewer = this.createViewer(historyUrl, queryParameters);
     const canvas = this.createCanvas();
 
-    canvas.appendChild(header);
+    // canvas.appendChild(header);
     canvas.appendChild(viewer);
 
     return canvas;
