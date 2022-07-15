@@ -82,7 +82,7 @@ class SlideOutManager {
   createViewer(historyUrl, queryParameters) {
     const viewer = document.createElement("div");
 
-    viewer.classList.add("frame-content");
+    viewer.classList.add("frame-wrap");
 
     const iframe = document.createElement("iframe");
 
