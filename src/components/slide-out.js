@@ -1,4 +1,4 @@
-import { getDocumentBody } from "./jquery";
+import { getDocumentBody, getHtml } from "./jquery";
 
 class SlideOutManager {
   constructor(jQuery) {
@@ -43,6 +43,9 @@ class SlideOutManager {
 
     canvas.classList.add("off-canvas", "position-right", "viewer-content");
 
+    canvas.style.width = "50%";
+    canvas.style.zIndex = "1010";
+
     return canvas;
   }
 
@@ -79,7 +82,7 @@ class SlideOutManager {
   createViewer(historyUrl, queryParameters) {
     const viewer = document.createElement("div");
 
-    viewer.classList.add("padding-1", "frame-content");
+    viewer.classList.add("frame-content");
 
     const iframe = document.createElement("iframe");
 
@@ -104,6 +107,7 @@ class SlideOutManager {
 
   toggleHideScroll() {
     getDocumentBody().classList.toggle("hide-scroll");
+    getHtml().classList.toggle("hide-scroll");
   }
 
   attachListeners() {
@@ -142,7 +146,9 @@ export function createHistoryViewerWidget(jQuery) {
       return;
     }
 
-    const isInvalidOptions = [options.historyUrl, options.queryParameters].some((value) => !value);
+    const isInvalidOptions = [options.historyUrl, options.queryParameters].some(
+      (value) => !value
+    );
 
     if (isInvalidOptions) {
       console.error("historyUrl and queryParameters is mandatory options");
