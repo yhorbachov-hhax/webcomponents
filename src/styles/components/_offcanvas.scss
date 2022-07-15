@@ -3,17 +3,21 @@ body {
 }
 
 .viewer-content {
-  width: 50%;
-  z-index: 1006 !important;
-  // 1006 since reveal-overlay is 1005
-  // important since other classes overrides in runtime
+  & + .js-off-canvas-overlay {
+    z-index: 1007;
+  }
 }
 
 .frame-content {
   width: 100%;
   height: 100%;
+  border: 0;
 }
 
 .hide-scroll {
+  overflow: hidden;
+}
+
+html.is-reveal-open.zf-has-scroll.hide-scroll {
   overflow: hidden;
 }
