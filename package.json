@@ -6,7 +6,8 @@
   "scripts": {
     "commit": "cz",
     "bundle:dev": "webpack serve --open --config webpack.dev.js",
-    "bundle:prod": "webpack --config webpack.prod.js"
+    "bundle:prod": "webpack --config webpack.prod.js",
+    "prepublishOnly": "yarn bundle:prod"
   },
   "devDependencies": {
     "babel-loader": "^8.2.5",
