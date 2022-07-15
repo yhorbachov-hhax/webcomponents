@@ -1,6 +1,6 @@
 {
   "name": "foundation-web-components",
-  "version": "1.4.3",
+  "version": "1.4.4",
   "description": "JQuery plugins and Web Components library",
   "main": "dist/webcomponents.js",
   "scripts": {
