@@ -1,3 +1,4 @@
+import { IFRAME_HEADER_CLOSE_EVENT_NAME } from "../constants";
 import { getDocumentBody, getHtml } from "./jquery";
 
 class SlideOutManager {
@@ -47,36 +48,6 @@ class SlideOutManager {
     return canvas;
   }
 
-  createHeader(headerTitle) {
-    const headerFragment = document.createDocumentFragment();
-    const header = document.createElement("h2");
-    const title = document.createElement("span");
-    const closeButton = document.createElement("button");
-    const closeButtonContent = document.createElement("span");
-
-    header.classList.add("title");
-
-    title.classList.add("pageTitle");
-    title.innerText = headerTitle;
-
-    closeButton.classList.add("close-button");
-    closeButton.type = "button";
-    closeButton.ariaLabel = "Close Panel";
-
-    closeButtonContent.ariaHidden = "true";
-    closeButtonContent.innerText = "x";
-
-    this.attachToggle(closeButtonContent);
-
-    header.appendChild(title);
-    closeButton.appendChild(closeButtonContent);
-
-    headerFragment.appendChild(header);
-    headerFragment.appendChild(closeButton);
-
-    return headerFragment;
-  }
-
   createViewer(historyUrl, queryParameters) {
     const viewer = document.createElement("div");
 
@@ -86,11 +57,18 @@ class SlideOutManager {
 
     iframe.classList.add("frame-content");
 
-    viewer.appendChild(iframe);
-
     const formattedHistoryUrl = this.formatHistoryUrl(historyUrl, queryParameters);
 
     iframe.src = formattedHistoryUrl;
+
+    viewer.appendChild(iframe);
+
+    // Ad-hoc solution for trap focus
+    // const trapFocusElement = document.createElement("input");
+
+    // trapFocusElement.style.opacity = 0;
+
+    // viewer.appendChild(trapFocusElement);
 
     return viewer;
   }
@@ -106,11 +84,29 @@ class SlideOutManager {
     getHtml().classList.toggle("hide-scroll");
   }
 
+  toggleCanvas() {
+    this.$offCanvasContainer.toggle();
+  }
+
   attachListeners() {
+    this.attachCanvasListeners();
+    this.attachIframeListener();
+  }
+
+  attachCanvasListeners() {
     ["closed.zf.offCanvas", "opened.zf.offCanvas"].map((eventType) => {
       this.$offCanvasContainer.$element.on(eventType, () => {
         this.toggleHideScroll();
       });
+    });
+  }
+
+  attachIframeListener() {
+    window.top.addEventListener("message", (event) => {
+      if (event.data === IFRAME_HEADER_CLOSE_EVENT_NAME) {
+        this.toggleCanvas();
+        this.toggleHideScroll();
+      }
     });
   }
 

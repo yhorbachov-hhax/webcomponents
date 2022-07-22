@@ -1,0 +1,1 @@
+export const IFRAME_HEADER_CLOSE_EVENT_NAME = "HeaderClose"
