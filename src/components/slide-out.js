@@ -7,7 +7,7 @@ class SlideOutManager {
   }
 
   connectSlideOut($triggerElement, options) {
-    const canvasContainer = this.createMainContainer(options);
+    const canvasContainer = this.createCanvasContainer(options);
 
     this.attachToBody(canvasContainer);
     this.attachToggle($triggerElement);
@@ -26,13 +26,11 @@ class SlideOutManager {
     this.attachListeners();
   }
 
-  createMainContainer(options) {
-    const { headerTitle, historyUrl, queryParameters } = options;
-    // const header = this.createHeader(headerTitle);
+  createCanvasContainer(options) {
+    const { historyUrl, queryParameters } = options;
     const viewer = this.createViewer(historyUrl, queryParameters);
     const canvas = this.createCanvas();
 
-    // canvas.appendChild(header);
     canvas.appendChild(viewer);
 
     return canvas;
@@ -90,11 +88,9 @@ class SlideOutManager {
 
     viewer.appendChild(iframe);
 
-    // Combine query params and concat to opening iframe URL
+    const formattedHistoryUrl = this.formatHistoryUrl(historyUrl, queryParameters);
 
-    console.log(queryParameters);
-
-    iframe.src = historyUrl;
+    iframe.src = formattedHistoryUrl;
 
     return viewer;
   }
@@ -121,6 +117,30 @@ class SlideOutManager {
   attachToBody(container) {
     getDocumentBody().appendChild(container);
   }
+
+  formatHistoryUrl(historyUrl, queryParameters) {
+    const formattedQueryParameters = this.formatQueryParameters(queryParameters);
+    const urlParams = new URLSearchParams(formattedQueryParameters);
+
+    return historyUrl + "?" + urlParams.toString();
+  }
+
+  formatQueryParameters(queryParameters) {
+    const compositeKey = queryParameters["CompositeKey"];
+
+    if (!compositeKey) {
+      return queryParameters;
+    }
+
+    const rawParameters = compositeKey.split("&");
+    const compositeParameters = rawParameters.reduce((baseParameters, rawPair) => {
+      const [key, value] = rawPair.split("=");
+
+      return { ...baseParameters, [key]: value };
+    });
+
+    return { ...queryParameters, ...compositeParameters };
+  }
 }
 
 /* 
@@ -146,9 +166,7 @@ export function createHistoryViewerWidget(jQuery) {
       return;
     }
 
-    const isInvalidOptions = [options.historyUrl, options.queryParameters].some(
-      (value) => !value
-    );
+    const isInvalidOptions = [options.historyUrl, options.queryParameters].some((value) => !value);
 
     if (isInvalidOptions) {
       console.error("historyUrl and queryParameters is mandatory options");
