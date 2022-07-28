@@ -133,7 +133,7 @@ class SlideOutManager {
       const [key, value] = rawPair.split("=");
 
       return { ...baseParameters, [key]: value };
-    });
+    }, {});
 
     return { ...queryParameters, ...compositeParameters };
   }
