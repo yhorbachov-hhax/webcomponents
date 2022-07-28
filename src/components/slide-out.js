@@ -24,7 +24,7 @@ class SlideOutManager {
 
     $container.foundation();
 
-    this.attachListeners();
+    this.attachListeners(options);
   }
 
   createCanvasContainer(options) {
@@ -88,9 +88,9 @@ class SlideOutManager {
     this.$offCanvasContainer.toggle();
   }
 
-  attachListeners() {
+  attachListeners(options) {
     this.attachCanvasListeners();
-    this.attachIframeListener();
+    this.attachIframeCloseListener(options);
   }
 
   attachCanvasListeners() {
@@ -101,9 +101,11 @@ class SlideOutManager {
     });
   }
 
-  attachIframeListener() {
+  attachIframeCloseListener(options) {
     window.top.addEventListener("message", (event) => {
-      if (event.data === IFRAME_HEADER_CLOSE_EVENT_NAME) {
+      const targetEvent = [IFRAME_HEADER_CLOSE_EVENT_NAME, options.queryParameters.SectionName].join("_");
+
+      if (event.data === targetEvent) {
         this.toggleCanvas();
         this.toggleHideScroll();
       }
